@@ -21,10 +21,29 @@ from StreamDeck.ImageHelpers import PILHelper
 ASSETS_PATH = os.path.join(os.path.dirname(__file__), "Assets")
 
 class Key:
-    def __init__(self, deck, icon_filename, font_filename, label_text):
+    deck = None
+    image = None
+    font = None
+    label_text = None
+    index = None
+
+    def __init__(self, deck, index=0):
         self.deck = deck
-        image = PILHelper.create_image(deck)
-        draw = ImageDraw.Draw(image)
+        self.index = index
+
+    def render_image(self, deck, icon_filename, font_filename, label_text):
+        # Generate the custom key with the requested image and label
+        image = image_from_filename(deck, icon_filename)
+        image = add_text_to_image(font_filename, label_text, image)
+        self.image = PILHelper.to_native_format(deck, image)
+
+    def get_image(self):
+        return self.image
+
+    def get_index(self):
+        return self.index
+
+
 
 def image_from_filename(deck, filename):
     image = PILHelper.create_image(deck)
@@ -57,15 +76,7 @@ def add_text_to_image(font_filename, label_text, image):
 # PIL module.
 def render_key_image(deck, icon_filename, font_filename, label_text):
     image = image_from_filename(deck, icon_filename)
-
-    # # Load a custom TrueType font and use it to overlay the key index, draw key
-    # # label onto the image
-    # font = ImageFont.truetype(font_filename, 14)
-    # label_w, label_h = draw.textsize(label_text, font=font)
-    # label_pos = ((image.width - label_w) // 2, image.height - 20)
-    # draw.text(label_pos, text=label_text, font=font, fill="white")
     image = add_text_to_image(font_filename, label_text, image)
-
     return PILHelper.to_native_format(deck, image)
 
 
@@ -95,25 +106,25 @@ def get_key_style(deck, key, state):
 
 # Creates a new key image based on the key index, style and current key state
 # and updates the image on the StreamDeck.
-def update_key_image(deck, key, state):
+def update_key_image(deck, _key, state):
     # Determine what icon and label to use on the generated key
-    key_style = get_key_style(deck, key, state)
-
-    # Generate the custom key with the requested image and label
-    image = render_key_image(deck, key_style["icon"], key_style["font"], key_style["label"])
+    key_style = get_key_style(deck, _key.get_index(), state)
+    _key.render_image(deck, key_style["icon"], key_style["font"], key_style["label"])
+    image = _key.get_image()
 
     # Update requested key with the generated image
-    deck.set_key_image(key, image)
+    deck.set_key_image(_key.get_index(), image)
 
 
 # Prints key state change information, updates the key image and performs any
 # associated actions when a key is pressed.
 def key_change_callback(deck, key, state):
+    _key = Key(deck, key)
     # Print new key state
     print("Deck {} Key {} = {}".format(deck.id(), key, state), flush=True)
 
     # Update the key image based on the new key state
-    update_key_image(deck, key, state)
+    update_key_image(deck, _key, state)
 
     # Check if the key is changing to the pressed state
     if state:
@@ -144,7 +155,8 @@ if __name__ == "__main__":
 
         # Set initial key images
         for key in range(deck.key_count()):
-            update_key_image(deck, key, False)
+            _key = Key(deck, key)
+            update_key_image(deck, _key, False)
 
         # Register callback function for when a key state changes
         deck.set_key_callback(key_change_callback)
