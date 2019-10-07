@@ -1,0 +1,2 @@
+pkg-resources==0.0.0
+streamdeck==0.5.0
