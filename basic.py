@@ -26,6 +26,7 @@ class Key:
     font = None
     label_text = None
     index = None
+    state = None
 
     def __init__(self, deck, index=0):
         self.deck = deck
@@ -43,6 +44,49 @@ class Key:
     def get_index(self):
         return self.index
 
+    def set_state(self, state):
+        self.state = state
+
+    def get_state(self):
+        return self.state
+
+    # creates a new key image based on the key index, style and current key 
+    # state and updates the image on the streamdeck.
+    def update_image(self, state):
+        # Update the key image based on the new key state
+        # determine what icon and label to use on the generated key
+        # key_style = get_key_style(self.deck, self.get_index(), state)
+        key_style = self.get_style(state)
+        self.render_image(deck, key_style["icon"], key_style["font"], key_style["label"])
+    
+        # update requested key with the generated image
+        self.deck.set_key_image(self.get_index(), self.get_image())
+
+    def get_style(self, state=None):
+        if state:
+            self.set_state(state)
+        # Returns styling information for a key based on its position and state
+    # def get_key_style(deck, key, state):
+        # Last button in the example application is the exit button
+        exit_key_index = deck.key_count() - 1
+    
+        if self.get_index() == exit_key_index:
+            name = "exit"
+            icon = "{}.png".format("Exit")
+            font = "Roboto-Regular.ttf"
+            label = "Exit"
+        else:
+            name = "emoji"
+            icon = "{}.png".format("Pressed" if self.get_state() else "Released")
+            font = "Roboto-Regular.ttf"
+            label = "Pressed!" if self.get_state() else "Key {}".format(self.get_index())
+    
+        return {
+            "name": name,
+            "icon": os.path.join(ASSETS_PATH, icon),
+            "font": os.path.join(ASSETS_PATH, font),
+            "label": label
+        }
 
 
 def image_from_filename(deck, filename):
@@ -72,16 +116,11 @@ def add_text_to_image(font_filename, label_text, image):
     return image
 
 
-# Generates a custom tile with run-time generated text and custom image via the
-# PIL module.
-def render_key_image(deck, icon_filename, font_filename, label_text):
-    image = image_from_filename(deck, icon_filename)
-    image = add_text_to_image(font_filename, label_text, image)
-    return PILHelper.to_native_format(deck, image)
-
-
 # Returns styling information for a key based on its position and state.
 def get_key_style(deck, key, state):
+    _key = Key(deck, key)
+    _key.set_state(state)
+    return _key.get_style()
     # Last button in the example application is the exit button
     exit_key_index = deck.key_count() - 1
 
@@ -104,16 +143,15 @@ def get_key_style(deck, key, state):
     }
 
 
-# Creates a new key image based on the key index, style and current key state
-# and updates the image on the StreamDeck.
+# creates a new key image based on the key index, style and current key state
+# and updates the image on the streamdeck.
 def update_key_image(deck, _key, state):
-    # Determine what icon and label to use on the generated key
+    # determine what icon and label to use on the generated key
     key_style = get_key_style(deck, _key.get_index(), state)
     _key.render_image(deck, key_style["icon"], key_style["font"], key_style["label"])
-    image = _key.get_image()
 
-    # Update requested key with the generated image
-    deck.set_key_image(_key.get_index(), image)
+    # update requested key with the generated image
+    deck.set_key_image(_key.get_index(), _key.get_image())
 
 
 # Prints key state change information, updates the key image and performs any
@@ -121,14 +159,13 @@ def update_key_image(deck, _key, state):
 def key_change_callback(deck, key, state):
     _key = Key(deck, key)
     # Print new key state
-    print("Deck {} Key {} = {}".format(deck.id(), key, state), flush=True)
-
-    # Update the key image based on the new key state
-    update_key_image(deck, _key, state)
+    print("Deck {} Key {} = {}".format(deck.id(), _key.get_index(), state), flush=True)
+    _key.update_image(state)
 
     # Check if the key is changing to the pressed state
     if state:
-        key_style = get_key_style(deck, key, state)
+        key_style = _key.get_style(state)
+        # key_style = get_key_style(deck, _key.get_index(), state)
 
         # When an exit button is pressed, close the application
         if key_style["name"] == "exit":
@@ -154,8 +191,8 @@ if __name__ == "__main__":
         deck.set_brightness(30)
 
         # Set initial key images
-        for key in range(deck.key_count()):
-            _key = Key(deck, key)
+        for key_num in range(deck.key_count()):
+            _key = Key(deck, key_num)
             update_key_image(deck, _key, False)
 
         # Register callback function for when a key state changes
