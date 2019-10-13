@@ -19,7 +19,10 @@ class Key:
         self.deck = deck
         self.index = index
 
-    def render_image(self, deck, icon_filename, font_filename, label_text):
+    def create_image(self, deck, icon_filename, font_filename, label_text):
+        # TODO Move away from using the deck parameter, use self.deck
+        if deck is None:
+            deck = self.deck
         # Generate the custom key with the requested image and label
         image = utils.image_from_filename(deck, icon_filename)
         image = utils.add_text_to_image(font_filename, label_text, image)
@@ -44,7 +47,7 @@ class Key:
         # determine what icon and label to use on the generated key
         # key_style = get_key_style(self.deck, self.get_index(), state)
         key_style = self.get_style(state)
-        self.render_image(self.deck, key_style["icon"], key_style["font"], key_style["label"])
+        self.create_image(self.deck, key_style["icon"], key_style["font"], key_style["label"])
     
         # update requested key with the generated image
         self.deck.set_key_image(self.get_index(), self.get_image())
@@ -53,7 +56,6 @@ class Key:
         if state:
             self.set_state(state)
         # Returns styling information for a key based on its position and state
-    # def get_key_style(deck, key, state):
         # Last button in the example application is the exit button
         exit_key_index = self.deck.key_count() - 1
     

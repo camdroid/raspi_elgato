@@ -23,26 +23,6 @@ def get_key_style(deck, key, state):
     _key = Key(deck, key)
     _key.set_state(state)
     return _key.get_style()
-    # Last button in the example application is the exit button
-    exit_key_index = deck.key_count() - 1
-
-    if key == exit_key_index:
-        name = "exit"
-        icon = "{}.png".format("Exit")
-        font = "Roboto-Regular.ttf"
-        label = "Bye" if state else "Exit"
-    else:
-        name = "emoji"
-        icon = "{}.png".format("Pressed" if state else "Released")
-        font = "Roboto-Regular.ttf"
-        label = "Pressed!" if state else "Key {}".format(key)
-
-    return {
-        "name": name,
-        "icon": os.path.join(ASSETS_PATH, icon),
-        "font": os.path.join(ASSETS_PATH, font),
-        "label": label
-    }
 
 
 # creates a new key image based on the key index, style and current key state
@@ -50,7 +30,7 @@ def get_key_style(deck, key, state):
 def update_key_image(deck, _key, state):
     # determine what icon and label to use on the generated key
     key_style = get_key_style(deck, _key.get_index(), state)
-    _key.render_image(deck, key_style["icon"], key_style["font"], key_style["label"])
+    _key.create_image(deck, key_style["icon"], key_style["font"], key_style["label"])
 
     # update requested key with the generated image
     deck.set_key_image(_key.get_index(), _key.get_image())
