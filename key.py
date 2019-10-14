@@ -18,6 +18,9 @@ class Key:
     def __init__(self, deck, index=0):
         self.deck = deck
         self.index = index
+        key_style = self.get_style(False)
+        self.create_image(deck, key_style["icon"], key_style["font"], key_style["label"])
+        self.deck.set_key_image(self.get_index(), self.get_image())
 
     def create_image(self, deck, icon_filename, font_filename, label_text):
         # TODO Move away from using the deck parameter, use self.deck

@@ -22,24 +22,6 @@ from exit_key import ExitKey
 key_mapping = None
 
 
-# Returns styling information for a key based on its position and state.
-def get_key_style(deck, key, state):
-    _key = Key(deck, key)
-    _key.set_state(state)
-    return _key.get_style()
-
-
-# creates a new key image based on the key index, style and current key state
-# and updates the image on the streamdeck.
-def update_key_image(deck, _key, state):
-    # determine what icon and label to use on the generated key
-    key_style = get_key_style(deck, _key.get_index(), state)
-    _key.create_image(deck, key_style["icon"], key_style["font"], key_style["label"])
-
-    # update requested key with the generated image
-    deck.set_key_image(_key.get_index(), _key.get_image())
-
-
 # Prints key state change information, updates the key image and performs any
 # associated actions when a key is pressed.
 def key_change_callback(deck, key, state):
@@ -72,7 +54,6 @@ if __name__ == "__main__":
         # Set initial key images
         for key_num in range(deck.key_count()):
             _key = Key(deck, key_num)
-            update_key_image(deck, _key, False)
 
         # Register callback function for when a key state changes
         deck.set_key_callback(key_change_callback)
