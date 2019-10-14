@@ -41,13 +41,12 @@ def update_key_image(deck, _key, state):
 def key_change_callback(deck, key, state):
     _key = Key(deck, key)
     # Print new key state
-    print("Deck {} Key {} = {}".format(deck.id(), _key.get_index(), state), flush=True)
     _key.update_image(state)
+    _key.callback(deck, state)
 
     # Check if the key is changing to the pressed state
     if state:
         key_style = _key.get_style(state)
-        # key_style = get_key_style(deck, _key.get_index(), state)
 
         # When an exit button is pressed, close the application
         if key_style["name"] == "exit":

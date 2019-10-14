@@ -76,3 +76,6 @@ class Key:
             "font": os.path.join(ASSETS_PATH, font),
             "label": label
         }
+
+    def callback(self, deck, state):
+        pass
