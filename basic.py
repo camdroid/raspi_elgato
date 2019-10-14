@@ -16,6 +16,10 @@ from PIL import Image, ImageDraw, ImageFont
 from StreamDeck.DeviceManager import DeviceManager
 from StreamDeck.ImageHelpers import PILHelper
 from key import Key
+from exit_key import ExitKey
+
+
+key_mapping = None
 
 
 # Returns styling information for a key based on its position and state.
@@ -39,23 +43,16 @@ def update_key_image(deck, _key, state):
 # Prints key state change information, updates the key image and performs any
 # associated actions when a key is pressed.
 def key_change_callback(deck, key, state):
-    _key = Key(deck, key)
-    # Print new key state
-    _key.update_image(state)
+    _key = key_mapping[key](deck, key)
     _key.callback(deck, state)
 
-    # Check if the key is changing to the pressed state
-    if state:
-        key_style = _key.get_style(state)
 
-        # When an exit button is pressed, close the application
-        if key_style["name"] == "exit":
-            # Reset deck, clearing all button images
-            deck.reset()
-
-            # Close deck handle, terminating internal worker threads
-            deck.close()
-
+def create_key_mapping(deck, keys=None):
+    global key_mapping
+    if keys is None:
+        keys = [Key]*(deck.key_count()-1)
+        keys.append(ExitKey)
+    key_mapping = keys
 
 if __name__ == "__main__":
     streamdecks = DeviceManager().enumerate()
@@ -65,6 +62,7 @@ if __name__ == "__main__":
     for index, deck in enumerate(streamdecks):
         deck.open()
         deck.reset()
+        create_key_mapping(deck)
 
         print("Opened '{}' device (serial number: '{}')\n".format(deck.deck_type(), deck.get_serial_number()))
 

@@ -78,4 +78,4 @@ class Key:
         }
 
     def callback(self, deck, state):
-        pass
+        self.update_image(state)
