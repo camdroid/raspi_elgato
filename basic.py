@@ -24,9 +24,9 @@ key_mapping = None
 
 # Prints key state change information, updates the key image and performs any
 # associated actions when a key is pressed.
-def key_change_callback(deck, key, state):
-    _key = key_mapping[key](deck, key)
-    _key.callback(deck, state)
+def key_change_callback(deck, key_num, state):
+    key = key_mapping[key_num](deck, key_num)
+    key.callback(deck, state)
 
 
 def create_key_mapping(deck, keys=None):
@@ -35,6 +35,10 @@ def create_key_mapping(deck, keys=None):
         keys = [Key]*(deck.key_count()-1)
         keys.append(ExitKey)
     key_mapping = keys
+
+def initialize_keys(deck):
+    for key_num in range(deck.key_count()):
+        _key = key_mapping[key_num](deck, key_num)
 
 if __name__ == "__main__":
     streamdecks = DeviceManager().enumerate()
@@ -52,8 +56,7 @@ if __name__ == "__main__":
         deck.set_brightness(30)
 
         # Set initial key images
-        for key_num in range(deck.key_count()):
-            _key = Key(deck, key_num)
+        initialize_keys(deck)
 
         # Register callback function for when a key state changes
         deck.set_key_callback(key_change_callback)

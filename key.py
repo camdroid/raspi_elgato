@@ -58,25 +58,15 @@ class Key:
     def get_style(self, state=None):
         if state:
             self.set_state(state)
-        # Returns styling information for a key based on its position and state
-        # Last button in the example application is the exit button
-        exit_key_index = self.deck.key_count() - 1
+        # Returns styling information for a key based on its state
     
-        if self.get_index() == exit_key_index:
-            name = "exit"
-            icon = "{}.png".format("Exit")
-            font = "Roboto-Regular.ttf"
-            label = "Exit Key"
-        else:
-            name = "emoji"
-            icon = "{}.png".format("Pressed" if self.get_state() else "Released")
-            font = "Roboto-Regular.ttf"
-            label = "Pressed!" if self.get_state() else "Key {}".format(self.get_index())
+        icon = "{}.png".format("Pressed" if self.get_state() else "Released")
+        label = "Pressed!" if self.get_state() else "Key {}".format(self.get_index())
     
         return {
-            "name": name,
+            "name": "emoji",
             "icon": os.path.join(ASSETS_PATH, icon),
-            "font": os.path.join(ASSETS_PATH, font),
+            "font": os.path.join(ASSETS_PATH, "Roboto-Regular.ttf"),
             "label": label
         }
 
