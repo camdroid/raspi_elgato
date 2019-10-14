@@ -63,7 +63,7 @@ class Key:
             name = "exit"
             icon = "{}.png".format("Exit")
             font = "Roboto-Regular.ttf"
-            label = "Exit"
+            label = "Exit Key"
         else:
             name = "emoji"
             icon = "{}.png".format("Pressed" if self.get_state() else "Released")
