@@ -1,5 +1,8 @@
 from key import Key
-import os
+import requests
+
+# I think IFTTT Maker is being deprecated in favor of Platform.
+# TODO Will figure out how to use that later
 
 
 class IFTTTKey(Key):
@@ -11,5 +14,8 @@ class IFTTTKey(Key):
         return self.label
 
     def callback(self, deck, state):
+        url = 'https://maker.ifttt.com/use/{master_key}'
+        event = 'button_pressed'
+        r = requests.post(url, data={'event': event})
+        r2 = requests.post('https://maker.ifttt.com/trigger/button_pressed/with/key/{some_key}')
         print('Hi, IFTTT!')
-        pass

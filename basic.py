@@ -33,8 +33,7 @@ def key_change_callback(deck, key_num, state):
 def create_key_mapping(deck, keys=None):
     global key_mapping
     if keys is None:
-        keys = [Key]*(deck.key_count()-2)
-        keys.append(IFTTTKey)
+        keys = [Key]*(deck.key_count()-1)
         keys.append(ExitKey)
     key_mapping = keys
 
