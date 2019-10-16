@@ -17,7 +17,7 @@ from StreamDeck.DeviceManager import DeviceManager
 from StreamDeck.ImageHelpers import PILHelper
 from key import Key
 from exit_key import ExitKey
-from ifttt_key import IFTTTKey
+from toggl_key import TogglKey
 
 
 key_mapping = None
@@ -33,7 +33,8 @@ def key_change_callback(deck, key_num, state):
 def create_key_mapping(deck, keys=None):
     global key_mapping
     if keys is None:
-        keys = [Key]*(deck.key_count()-1)
+        keys = [Key]*(deck.key_count()-2)
+        keys.append(TogglKey)
         keys.append(ExitKey)
     key_mapping = keys
 

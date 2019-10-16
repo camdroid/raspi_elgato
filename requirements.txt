@@ -5,4 +5,5 @@ idna==2.8
 Pillow==6.2.0
 requests==2.22.0
 -e git+git@github.com:camdroid/python-elgato-streamdeck.git@c829e1102bb911ea7922e33b720e689bd0b662e9#egg=streamdeck
+TogglPy==0.1.1
 urllib3==1.25.6
