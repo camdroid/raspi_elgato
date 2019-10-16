@@ -18,6 +18,7 @@ from StreamDeck.ImageHelpers import PILHelper
 from key import Key
 from exit_key import ExitKey
 from toggl_key import TogglKey
+from emoji_key import EmojiKey
 
 
 key_mapping = None
@@ -29,13 +30,17 @@ def key_change_callback(deck, key_num, state):
     key = key_mapping[key_num](deck, key_num)
     key.callback(deck, state)
 
-
 def create_key_mapping(deck, keys=None):
     global key_mapping
     if keys is None:
-        keys = [Key]*(deck.key_count()-2)
+        keys = [EmojiKey]*(deck.key_count()-3)
         keys.append(TogglKey)
         keys.append(ExitKey)
+
+    # TODO There's a bug in initialize_keys if all the physical keys aren't
+    # used, so fill up the rest
+    for i in range(deck.key_count()-len(keys)):
+        keys.append(Key)
     key_mapping = keys
 
 def initialize_keys(deck):

@@ -14,11 +14,11 @@ class Key:
     label_text = None
     index = None
     state = None
-    icon = 'Released.png'
+    icon = 'blank_green_button.png'
     label = 'Key'
     name = 'emoji'
     font = 'Roboto-Regular.ttf'
-    static_key = False
+    static_key = True
 
     # TODO Need to split out EmojiKey from Key
     # Key should just be a superclass that defines methods - an interface
@@ -45,7 +45,7 @@ class Key:
         return self.index
 
     def get_label(self):
-        return f'Key {self.get_index()}'
+        return self.label
 
     def set_state(self, state):
         self.state = state
@@ -53,8 +53,7 @@ class Key:
             self.set_state_children()
 
     def set_state_children(self):
-        self.icon = "{}.png".format("Pressed" if self.get_state() else "Released")
-        self.label = "Pressed!" if self.get_state() else "Key {}".format(self.get_index())
+        pass
 
     def get_state(self):
         return self.state
@@ -66,7 +65,7 @@ class Key:
         # determine what icon and label to use on the generated key
         # key_style = get_key_style(self.deck, self.get_index(), state)
         key_style = self.get_style(state)
-        self.create_image(self.deck, key_style["icon"], key_style["font"], key_style["label"])
+        self.create_image(self.deck, key_style["icon"], key_style["font"], self.get_label())
     
         # update requested key with the generated image
         self.deck.set_key_image(self.get_index(), self.get_image())

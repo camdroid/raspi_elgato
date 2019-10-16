@@ -13,8 +13,5 @@ class TogglKey(Key):
         self.toggl = Toggl()
         self.toggl.setAPIKey(TOGGL_API_KEY)
 
-    def get_label(self):
-        return self.label
-
     def callback(self, deck, state):
         self.toggl.startTimeEntry('test from Elgato')
