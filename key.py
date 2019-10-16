@@ -14,7 +14,14 @@ class Key:
     label_text = None
     index = None
     state = None
+    icon = 'Released.png'
+    label = 'Key'
+    name = 'emoji'
+    font = 'Roboto-Regular.ttf'
+    static_key = False
 
+    # TODO Need to split out EmojiKey from Key
+    # Key should just be a superclass that defines methods - an interface
     def __init__(self, deck, index=0):
         self.deck = deck
         self.index = index
@@ -28,7 +35,7 @@ class Key:
             deck = self.deck
         # Generate the custom key with the requested image and label
         image = utils.image_from_filename(deck, icon_filename)
-        image = utils.add_text_to_image(font_filename, label_text, image)
+        image = utils.add_text_to_image(font_filename, self.get_label(), image)
         self.image = PILHelper.to_native_format(deck, image)
 
     def get_image(self):
@@ -37,8 +44,17 @@ class Key:
     def get_index(self):
         return self.index
 
+    def get_label(self):
+        return f'Key {self.get_index()}'
+
     def set_state(self, state):
         self.state = state
+        if not self.static_key:
+            self.set_state_children()
+
+    def set_state_children(self):
+        self.icon = "{}.png".format("Pressed" if self.get_state() else "Released")
+        self.label = "Pressed!" if self.get_state() else "Key {}".format(self.get_index())
 
     def get_state(self):
         return self.state
@@ -55,20 +71,17 @@ class Key:
         # update requested key with the generated image
         self.deck.set_key_image(self.get_index(), self.get_image())
 
+    # Returns styling information for a key based on its state
     def get_style(self, state=None):
         if state:
             self.set_state(state)
-        # Returns styling information for a key based on its state
-    
-        icon = "{}.png".format("Pressed" if self.get_state() else "Released")
-        label = "Pressed!" if self.get_state() else "Key {}".format(self.get_index())
-    
         return {
-            "name": "emoji",
-            "icon": os.path.join(ASSETS_PATH, icon),
-            "font": os.path.join(ASSETS_PATH, "Roboto-Regular.ttf"),
-            "label": label
+            "name": self.name,
+            "icon": os.path.join(ASSETS_PATH, self.icon),
+            "font": os.path.join(ASSETS_PATH, self.font),
+            "label": self.label
         }
 
     def callback(self, deck, state):
+        self.set_state(state)
         self.update_image(state)
